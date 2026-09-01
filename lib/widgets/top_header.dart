@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class TopHeader extends StatelessWidget {
   const TopHeader({super.key});
 
-  @overr
+  @override
   Widget build(BuildContext context) {
     return Column(
       children: [

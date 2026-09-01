@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'screens/home_page.dart';
 
+
 void main() {
   runApp(const MausamApp());
 }
@@ -17,7 +18,7 @@ class MausamApp extends StatelessWidget {
         fontFamily: 'Roboto',
         useMaterial3: true,
       ),
-      home: const HomePage(),
+      home:  HomePage(),
     );
   }
 }

@@ -1,10 +1,48 @@
 import 'package:flutter/material.dart';
+import '../services/weather_service.dart';
 
-class CurrentWeather extends StatelessWidget {
+class CurrentWeather extends StatefulWidget {
   const CurrentWeather({super.key});
 
   @override
+  State<CurrentWeather> createState() => _CurrentWeatherState();
+}
+
+class _CurrentWeatherState extends State<CurrentWeather> {
+
+  final WeatherService weatherService = WeatherService();
+
+  double? temperature;
+  DateTime? updatedAt;
+
+  @override
+  void initState() {
+    super.initState();
+    loadTemperature();
+  }
+
+  Future<void> loadTemperature() async {
+
+    try {
+
+      final temp = await weatherService.getTemperature();
+
+      setState(() {
+        temperature = temp;
+
+        updatedAt = DateTime.now();
+      });
+
+    } catch (e) {
+
+      print("Error loading temperature: $e");
+
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 25),
 
@@ -30,61 +68,66 @@ class CurrentWeather extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
 
-                    children: const [
+                    children: [
 
+                      // 🔥 LIVE TEMPERATURE
                       Text(
-                        "27.6°C",
-                        style: TextStyle(
+                        temperature == null
+                            ? "--°C"
+                            : "${temperature!.toStringAsFixed(1)}°C",
+
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 58,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
 
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
 
-                      Text(
-                        "Updated At   03:30 PM",
+                      const Text(
+                        "Updated At   --:--",
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 18,
                         ),
                       ),
 
-                      SizedBox(height: 18),
+                      const SizedBox(height: 18),
 
-                      Text(
-                        "Feels Like   31.7°C",
+                      const Text(
+                        "Feels Like   --°C",
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 18,
                         ),
                       ),
 
-                      SizedBox(height: 15),
+                      const SizedBox(height: 15),
 
-                      Text(
-                        "Maximum  33.0°C",
+                      const Text(
+                        "Maximum  --°C",
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 18,
                         ),
                       ),
 
-                      SizedBox(height: 15),
+                      const SizedBox(height: 15),
 
-                      Text(
-                        "Minimum  26.8°C",
+                      const Text(
+                        "Minimum  --°C",
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 18,
                         ),
                       ),
 
-                      SizedBox(height: 25),
+                      const SizedBox(height: 25),
 
-                      Row(
+                      const Row(
                         children: [
+
                           Icon(
                             Icons.water_drop,
                             color: Colors.white,
@@ -94,7 +137,7 @@ class CurrentWeather extends StatelessWidget {
                           SizedBox(width: 5),
 
                           Text(
-                            "84%",
+                            "--%",
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 20,
@@ -106,7 +149,7 @@ class CurrentWeather extends StatelessWidget {
                   ),
                 ),
 
-                // Wind
+                // WIND
                 Column(
                   children: [
 

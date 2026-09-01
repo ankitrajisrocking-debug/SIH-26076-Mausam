@@ -11,52 +11,56 @@ import '../widgets/sun_moon_card.dart';
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
+    // 🆕 NEW
+  Future<void> refreshWeather() async {
+    await Future.delayed(
+      const Duration(seconds: 1),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF07569A),
 
       body: SafeArea(
-        child: SingleChildScrollView(
+  // 🆕 NEW
+  child: RefreshIndicator(
+    onRefresh: refreshWeather,
+
+    child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(), 
           child: Column(
             children: const [
 
-              // Top blue header
               TopHeader(),
 
               SizedBox(height: 20),
 
-              // Current temperature + humidity + wind
               CurrentWeather(),
 
               SizedBox(height: 20),
 
-              // 3-hour weather
               HourlyForecast(),
 
               SizedBox(height: 20),
 
-              // Agromet + Crowd Source
               ActionButtons(),
 
               SizedBox(height: 20),
 
-              // Weather warning
               AlertCard(),
 
               SizedBox(height: 15),
 
-              // Interactive map button
               InteractiveMapButton(),
 
               SizedBox(height: 25),
 
-              // 7-day forecast
               DailyForecast(),
 
               SizedBox(height: 25),
 
-              // Sun and moon
               SunMoonSection(),
 
               SizedBox(height: 30),
@@ -64,6 +68,7 @@ class HomePage extends StatelessWidget {
           ),
         ),
       ),
+    )
     );
   }
 }
