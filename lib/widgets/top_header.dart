@@ -5,58 +5,73 @@ class TopHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-
-        Row(
-          children: [
-
-            const SizedBox(width: 25),
-
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(
-                Icons.menu,
-                color: Colors.white,
-                size: 32,
-              ),
-            ),
-
-            const Expanded(
-              child: Text(
-                "National Institute of technology - NIT Silchar",
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 18, 20, 8),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 46,
+                height: 46,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: IconButton(
+                  onPressed: () {},
+                  icon: const Icon(
+                    Icons.menu_rounded,
+                    color: Colors.white,
+                    size: 28,
+                  ),
                 ),
               ),
-            ),
-
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(
-                Icons.search,
-                color: Colors.white,
-                size: 32,
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Text(
+                  'NIT Silchar',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Container(
+                width: 46,
+                height: 46,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: IconButton(
+                  onPressed: () {},
+                  icon: const Icon(
+                    Icons.search_rounded,
+                    color: Colors.white,
+                    size: 26,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          const Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              '01 September 2026',
+              style: TextStyle(
+                color: Colors.white70,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
               ),
             ),
-
-            const SizedBox(width: 15),
-          ],
-        ),
-
-        const SizedBox(height: 5),
-
-        const Text(
-          "01 September 2026",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
