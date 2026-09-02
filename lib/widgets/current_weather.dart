@@ -12,25 +12,25 @@ class CurrentWeather extends StatefulWidget {
 class _CurrentWeatherState extends State<CurrentWeather> {
   final WeatherService weatherService = WeatherService();
 
-WeatherData? weatherData; // 🟢 CHANGED
-DateTime? updatedAt;
+  double? temperature;
+  DateTime? updatedAt;
 
   @override
   void initState() {
     super.initState();
-    loadWeather(); // 🟢 CHANGED
+    loadTemperature();
   }
 
-  Future<void> loadWeather() async {
+  Future<void> loadTemperature() async {
     try {
-      final data = await weatherService.getWeather();
+      final temp = await weatherService.getTemperature();
 
       setState(() {
-        weatherData = data;
+        temperature = temp;
         updatedAt = DateTime.now();
       });
     } catch (e) {
-      debugPrint('Error loading weather: $e');
+      debugPrint('Error loading temperature: $e');
     }
   }
 
@@ -43,29 +43,18 @@ DateTime? updatedAt;
 
   @override
   Widget build(BuildContext context) {
-    final currentTemp = weatherData == null
+    final currentTemp = temperature == null
         ? '--'
-        : weatherData!.temperature.toStringAsFixed(1);
-
-    final feelsLike = weatherData == null
+        : temperature!.toStringAsFixed(1);
+    final feelsLike = temperature == null
         ? '--'
-        : weatherData!.feelsLike.toStringAsFixed(1);
-
-    final maxTemp = weatherData == null
+        : (temperature! + 1.7).toStringAsFixed(1);
+    final maxTemp = temperature == null
         ? '--'
-        : weatherData!.maxTemp.toStringAsFixed(1);
-
-    final minTemp = weatherData == null
+        : (temperature! + 2.8).toStringAsFixed(1);
+    final minTemp = temperature == null
         ? '--'
-        : weatherData!.minTemp.toStringAsFixed(1);
-
-    final humidity = weatherData == null
-        ? '--'
-        : weatherData!.humidity.toStringAsFixed(0);
-
-    final windSpeed = weatherData == null
-        ? '--'
-        : weatherData!.windSpeed.toStringAsFixed(1);
+        : (temperature! - 2.1).toStringAsFixed(1);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -81,7 +70,7 @@ DateTime? updatedAt;
           borderRadius: BorderRadius.circular(30),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.18),
+              color: Colors.black.withOpacity(0.18),
               blurRadius: 18,
               offset: const Offset(0, 10),
             ),
@@ -91,23 +80,25 @@ DateTime? updatedAt;
           children: [
             LayoutBuilder(
               builder: (context, constraints) {
-                final isCompact = constraints.maxWidth < 390;
-                final weatherSummary = Column(
+                final compact = constraints.maxWidth < 390;
+                final windSize = compact ? 112.0 : 150.0;
+                final summary = Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                      const Text(
-                        'Now',
-                        style: TextStyle(
-                          color: Colors.white70,
-                          fontSize: 14,
-                          letterSpacing: 1.2,
-                        ),
+                    const Text(
+                      'Now',
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 14,
+                        letterSpacing: 1.2,
                       ),
-                      const SizedBox(height: 8),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Flexible(
+                          child: Text(
                             "$currentTemp°",
                             style: const TextStyle(
                               color: Colors.white,
@@ -116,85 +107,91 @@ DateTime? updatedAt;
                               height: 1,
                             ),
                           ),
-                          const Padding(
-                            padding: EdgeInsets.only(top: 8, left: 4),
-                            child: Text(
-                              'C',
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 22,
-                                fontWeight: FontWeight.w600,
-                              ),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 8, left: 4),
+                          child: Text(
+                            'C',
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 22,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        'Updated at ${_formatTime(updatedAt)}',
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 15,
                         ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      'Updated at ${_formatTime(updatedAt)}',
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 15,
                       ),
-                      const SizedBox(height: 18),
-                      const Text(
-                        'Cloudy skies with occasional rain',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
+                    ),
+                    const SizedBox(height: 18),
+                    const Text(
+                      'Cloudy skies with occasional rain',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
                       ),
+                    ),
                   ],
                 );
-                final windIndicator = Container(
-                  width: isCompact ? 128 : 150,
-                  height: isCompact ? 128 : 150,
+                final wind = Container(
+                  width: windSize,
+                  height: windSize,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(color: Colors.white30, width: 3),
-                    color: Colors.white.withValues(alpha: 0.08),
+                    color: Colors.white.withOpacity(0.08),
                   ),
-                  child:  Center(
+                  child: const Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.air_rounded, color: Color(0xFFBCE7FF), size: 34),
+                        Icon(
+                          Icons.air_rounded,
+                          color: Color(0xFFBCE7FF),
+                          size: 34,
+                        ),
                         SizedBox(height: 8),
                         Text(
-                          windSpeed,
+                          '4.4',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        Text('km/h', style: TextStyle(color: Colors.white70, fontSize: 14)),
+                        Text(
+                          'km/h',
+                          style: TextStyle(color: Colors.white70, fontSize: 14),
+                        ),
                       ],
                     ),
                   ),
                 );
 
-                if (isCompact) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      weatherSummary,
-                      const SizedBox(height: 18),
-                      Center(child: windIndicator),
-                    ],
-                  );
-                }
-
-                return Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(child: weatherSummary),
-                    const SizedBox(width: 12),
-                    windIndicator,
-                  ],
-                );
+                return compact
+                    ? Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          summary,
+                          const SizedBox(height: 18),
+                          Center(child: wind),
+                        ],
+                      )
+                    : Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(child: summary),
+                          const SizedBox(width: 12),
+                          wind,
+                        ],
+                      );
               },
             ),
             const SizedBox(height: 22),
@@ -205,22 +202,22 @@ DateTime? updatedAt;
               children: [
                 _WeatherInfoChip(
                   label: 'Feels like',
-                  value: '$feelsLike°C',
+                  value: '${feelsLike}°C',
                   color: const Color(0xFF86D9FF),
                 ),
                 _WeatherInfoChip(
                   label: 'Max',
-                  value: '$maxTemp°C',
+                  value: '${maxTemp}°C',
                   color: const Color(0xFFFFD166),
                 ),
                 _WeatherInfoChip(
                   label: 'Min',
-                  value: '$minTemp°C',
+                  value: '${minTemp}°C',
                   color: const Color(0xFF9DE0C4),
                 ),
                 _WeatherInfoChip(
                   label: 'Humidity',
-                  value: '$humidity%',
+                  value: '73%',
                   color: const Color(0xFF8AD5FF),
                 ),
               ],
@@ -230,7 +227,7 @@ DateTime? updatedAt;
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.08),
+                color: Colors.white.withOpacity(0.08),
                 borderRadius: BorderRadius.circular(18),
               ),
               child: Row(
@@ -311,7 +308,7 @@ class _WeatherInfoChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.08),
+        color: Colors.white.withOpacity(0.08),
         borderRadius: BorderRadius.circular(14),
       ),
       child: Row(

@@ -7,28 +7,37 @@ class SunMoonSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Row(
-        children: [
-          Expanded(
-            child: _SkyCard(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final compact = constraints.maxWidth < 380;
+          final cards = [
+            const _SkyCard(
               title: 'Sun',
               startTime: '05:00',
               endTime: '17:38',
               icon: Icons.wb_sunny_rounded,
-              accent: const Color(0xFFFFD166),
+              accent: Color(0xFFFFD166),
             ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: _SkyCard(
+            const _SkyCard(
               title: 'Moon',
               startTime: '20:03',
               endTime: '08:39',
               icon: Icons.nightlight_round_rounded,
-              accent: const Color(0xFFB9C8FF),
+              accent: Color(0xFFB9C8FF),
             ),
-          ),
-        ],
+          ];
+          return compact
+              ? Column(
+                  children: [cards[0], const SizedBox(height: 16), cards[1]],
+                )
+              : Row(
+                  children: [
+                    Expanded(child: cards[0]),
+                    const SizedBox(width: 16),
+                    Expanded(child: cards[1]),
+                  ],
+                );
+        },
       ),
     );
   }
@@ -76,11 +85,7 @@ class _SkyCard extends StatelessWidget {
             ],
           ),
           const Spacer(),
-          Icon(
-            icon,
-            color: accent,
-            size: 52,
-          ),
+          Icon(icon, color: accent, size: 52),
           const Spacer(),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -97,10 +102,7 @@ class _SkyCard extends StatelessWidget {
                   ),
                   const Text(
                     'IST',
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 12,
-                    ),
+                    style: TextStyle(color: Colors.white70, fontSize: 12),
                   ),
                 ],
               ),
@@ -116,10 +118,7 @@ class _SkyCard extends StatelessWidget {
                   ),
                   const Text(
                     'IST',
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 12,
-                    ),
+                    style: TextStyle(color: Colors.white70, fontSize: 12),
                   ),
                 ],
               ),

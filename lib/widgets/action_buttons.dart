@@ -40,10 +40,7 @@ class _ActionButton extends StatelessWidget {
   final IconData icon;
   final String text;
 
-  const _ActionButton({
-    required this.icon,
-    required this.text,
-  });
+  const _ActionButton({required this.icon, required this.text});
 
   @override
   Widget build(BuildContext context) {
@@ -63,21 +60,15 @@ class _ActionButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(22),
         onTap: () {},
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-          child: Column(
+          padding: const EdgeInsets.symmetric(horizontal: 14),
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                icon,
-                size: 28,
-                color: const Color(0xFF0D4D7B),
-              ),
-              const SizedBox(height: 6),
+              Icon(icon, size: 28, color: const Color(0xFF0D4D7B)),
+              const SizedBox(width: 10),
               Flexible(
                 child: Text(
                   text,
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     fontSize: 16,
