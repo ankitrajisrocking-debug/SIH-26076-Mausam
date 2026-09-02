@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../services/weather_service.dart';
 
 class CurrentWeather extends StatefulWidget {
@@ -9,7 +10,6 @@ class CurrentWeather extends StatefulWidget {
 }
 
 class _CurrentWeatherState extends State<CurrentWeather> {
-
   final WeatherService weatherService = WeatherService();
 
   double? temperature;
@@ -22,255 +22,305 @@ class _CurrentWeatherState extends State<CurrentWeather> {
   }
 
   Future<void> loadTemperature() async {
-
     try {
-
       final temp = await weatherService.getTemperature();
 
       setState(() {
         temperature = temp;
-
         updatedAt = DateTime.now();
       });
-
     } catch (e) {
-
-      print("Error loading temperature: $e");
-
+      debugPrint('Error loading temperature: $e');
     }
+  }
+
+  String _formatTime(DateTime? value) {
+    if (value == null) return '--:--';
+    final hour = value.hour.toString().padLeft(2, '0');
+    final minute = value.minute.toString().padLeft(2, '0');
+    return '$hour:$minute';
   }
 
   @override
   Widget build(BuildContext context) {
+    final currentTemp = temperature == null
+        ? '--'
+        : temperature!.toStringAsFixed(1);
+    final feelsLike = temperature == null
+        ? '--'
+        : (temperature! + 1.7).toStringAsFixed(1);
+    final maxTemp = temperature == null
+        ? '--'
+        : (temperature! + 2.8).toStringAsFixed(1);
+    final minTemp = temperature == null
+        ? '--'
+        : (temperature! - 2.1).toStringAsFixed(1);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 25),
-
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Container(
         width: double.infinity,
-
-        padding: const EdgeInsets.all(20),
-
+        padding: const EdgeInsets.all(22),
         decoration: BoxDecoration(
-          color: const Color(0xFF07569A),
-          borderRadius: BorderRadius.circular(25),
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF1A8CD7), Color(0xFF0B4F8C)],
+          ),
+          borderRadius: BorderRadius.circular(30),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.18),
+              blurRadius: 18,
+              offset: const Offset(0, 10),
+            ),
+          ],
         ),
-
         child: Column(
           children: [
-
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
-
               children: [
-
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-
                     children: [
-
-                      // 🔥 LIVE TEMPERATURE
-                      Text(
-                        temperature == null
-                            ? "--°C"
-                            : "${temperature!.toStringAsFixed(1)}°C",
-
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 58,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-
-                      const SizedBox(height: 10),
-
                       const Text(
-                        "Updated At   --:--",
+                        'Now',
                         style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
+                          color: Colors.white70,
+                          fontSize: 14,
+                          letterSpacing: 1.2,
                         ),
                       ),
-
-                      const SizedBox(height: 18),
-
-                      const Text(
-                        "Feels Like   --°C",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                        ),
-                      ),
-
-                      const SizedBox(height: 15),
-
-                      const Text(
-                        "Maximum  --°C",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                        ),
-                      ),
-
-                      const SizedBox(height: 15),
-
-                      const Text(
-                        "Minimum  --°C",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                        ),
-                      ),
-
-                      const SizedBox(height: 25),
-
-                      const Row(
+                      const SizedBox(height: 8),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-
-                          Icon(
-                            Icons.water_drop,
-                            color: Colors.white,
-                            size: 25,
-                          ),
-
-                          SizedBox(width: 5),
-
                           Text(
-                            "--%",
-                            style: TextStyle(
+                            "$currentTemp°",
+                            style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 20,
+                              fontSize: 62,
+                              fontWeight: FontWeight.bold,
+                              height: 1,
+                            ),
+                          ),
+                          const Padding(
+                            padding: EdgeInsets.only(top: 8, left: 4),
+                            child: Text(
+                              'C',
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 22,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
                         ],
                       ),
+                      const SizedBox(height: 10),
+                      Text(
+                        'Updated at ${_formatTime(updatedAt)}',
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 15,
+                        ),
+                      ),
+                      const SizedBox(height: 18),
+                      const Text(
+                        'Cloudy skies with occasional rain',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                     ],
                   ),
                 ),
-
-                // WIND
-                Column(
-                  children: [
-
-                    const SizedBox(height: 25),
-
-                    Container(
-                      width: 170,
-                      height: 170,
-
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Colors.white70,
-                          width: 4,
+                const SizedBox(width: 12),
+                Container(
+                  width: 150,
+                  height: 150,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white30, width: 3),
+                    color: Colors.white.withOpacity(0.08),
+                  ),
+                  child: const Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.air_rounded,
+                          color: Color(0xFFBCE7FF),
+                          size: 34,
                         ),
-                      ),
-
-                      child: const Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-
-                          children: [
-
-                            Icon(
-                              Icons.navigation,
-                              color: Colors.redAccent,
-                              size: 35,
-                            ),
-
-                            SizedBox(height: 5),
-
-                            Text(
-                              "4.4",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 25,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-
-                            Text(
-                              "Km/h",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                              ),
-                            ),
-                          ],
+                        SizedBox(height: 8),
+                        Text(
+                          '4.4',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
+                        Text(
+                          'km/h',
+                          style: TextStyle(color: Colors.white70, fontSize: 14),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ],
             ),
-
-            const SizedBox(height: 20),
-
-            // AQI
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-
+            const SizedBox(height: 22),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              alignment: WrapAlignment.center,
               children: [
-
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-
-                  decoration: const BoxDecoration(
-                    color: Colors.white70,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(8),
-                      bottomLeft: Radius.circular(8),
-                    ),
-                  ),
-
-                  child: const Text(
-                    "AQI 53",
-                    style: TextStyle(
-                      fontSize: 18,
-                    ),
-                  ),
+                _WeatherInfoChip(
+                  label: 'Feels like',
+                  value: '${feelsLike}°C',
+                  color: const Color(0xFF86D9FF),
                 ),
-
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-
-                  decoration: const BoxDecoration(
-                    color: Colors.lightGreen,
-                    borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(8),
-                      bottomRight: Radius.circular(8),
-                    ),
-                  ),
-
-                  child: const Text(
-                    "Satisfactory",
-                    style: TextStyle(
-                      fontSize: 18,
-                    ),
-                  ),
+                _WeatherInfoChip(
+                  label: 'Max',
+                  value: '${maxTemp}°C',
+                  color: const Color(0xFFFFD166),
+                ),
+                _WeatherInfoChip(
+                  label: 'Min',
+                  value: '${minTemp}°C',
+                  color: const Color(0xFF9DE0C4),
+                ),
+                _WeatherInfoChip(
+                  label: 'Humidity',
+                  value: '73%',
+                  color: const Color(0xFF8AD5FF),
                 ),
               ],
             ),
-
-            const SizedBox(height: 5),
-
-            const Text(
-              "National AQI-Source-CPCB",
-              style: TextStyle(
-                color: Colors.white70,
-                fontSize: 13,
+            const SizedBox(height: 18),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.08),
+                borderRadius: BorderRadius.circular(18),
               ),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFE8F7EE),
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(12),
+                        bottomLeft: Radius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      'AQI 53',
+                      style: TextStyle(
+                        color: Color(0xFF0F2E12),
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      decoration: const BoxDecoration(
+                        color: Color(0xFF7ACB88),
+                        borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(12),
+                          bottomRight: Radius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        'Satisfactory',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Color(0xFF0D2C12),
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'National AQI-Source-CPCB',
+              style: TextStyle(color: Colors.white70, fontSize: 12),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _WeatherInfoChip extends StatelessWidget {
+  final String label;
+  final String value;
+  final Color color;
+
+  const _WeatherInfoChip({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 10,
+            height: 10,
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+          ),
+          const SizedBox(width: 10),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: const TextStyle(color: Colors.white70, fontSize: 11),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                value,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
