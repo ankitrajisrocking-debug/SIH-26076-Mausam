@@ -12,25 +12,25 @@ class CurrentWeather extends StatefulWidget {
 class _CurrentWeatherState extends State<CurrentWeather> {
   final WeatherService weatherService = WeatherService();
 
-  double? temperature;
-  DateTime? updatedAt;
+WeatherData? weatherData; // 🟢 CHANGED
+DateTime? updatedAt;
 
   @override
   void initState() {
     super.initState();
-    loadTemperature();
+    loadWeather(); // 🟢 CHANGED
   }
 
-  Future<void> loadTemperature() async {
+  Future<void> loadWeather() async {
     try {
-      final temp = await weatherService.getTemperature();
+      final data = await weatherService.getWeather();
 
       setState(() {
-        temperature = temp;
+        weatherData = data;
         updatedAt = DateTime.now();
       });
     } catch (e) {
-      debugPrint('Error loading temperature: $e');
+      debugPrint('Error loading weather: $e');
     }
   }
 
@@ -43,18 +43,29 @@ class _CurrentWeatherState extends State<CurrentWeather> {
 
   @override
   Widget build(BuildContext context) {
-    final currentTemp = temperature == null
+    final currentTemp = weatherData == null
         ? '--'
-        : temperature!.toStringAsFixed(1);
-    final feelsLike = temperature == null
+        : weatherData!.temperature.toStringAsFixed(1);
+
+    final feelsLike = weatherData == null
         ? '--'
-        : (temperature! + 1.7).toStringAsFixed(1);
-    final maxTemp = temperature == null
+        : weatherData!.feelsLike.toStringAsFixed(1);
+
+    final maxTemp = weatherData == null
         ? '--'
-        : (temperature! + 2.8).toStringAsFixed(1);
-    final minTemp = temperature == null
+        : weatherData!.maxTemp.toStringAsFixed(1);
+
+    final minTemp = weatherData == null
         ? '--'
-        : (temperature! - 2.1).toStringAsFixed(1);
+        : weatherData!.minTemp.toStringAsFixed(1);
+
+    final humidity = weatherData == null
+        ? '--'
+        : weatherData!.humidity.toStringAsFixed(0);
+
+    final windSpeed = weatherData == null
+        ? '--'
+        : weatherData!.windSpeed.toStringAsFixed(1);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -148,7 +159,7 @@ class _CurrentWeatherState extends State<CurrentWeather> {
                     border: Border.all(color: Colors.white30, width: 3),
                     color: Colors.white.withOpacity(0.08),
                   ),
-                  child: const Center(
+                  child:  Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -159,7 +170,7 @@ class _CurrentWeatherState extends State<CurrentWeather> {
                         ),
                         SizedBox(height: 8),
                         Text(
-                          '4.4',
+                          windSpeed,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 28,
@@ -199,7 +210,7 @@ class _CurrentWeatherState extends State<CurrentWeather> {
                 ),
                 _WeatherInfoChip(
                   label: 'Humidity',
-                  value: '73%',
+                  value: '$humidity%',
                   color: const Color(0xFF8AD5FF),
                 ),
               ],
