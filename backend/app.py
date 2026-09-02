@@ -18,9 +18,9 @@ def weather():
     params = {
         "latitude": latitude,
         "longitude": longitude,
-        "current": "temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m,wind_direction_10m",
-        "hourly": "temperature_2m,relative_humidity_2m,precipitation_probability",
-        "daily": "temperature_2m_max,temperature_2m_min,weather_code,sunrise,sunset",
+        "current": "temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m,wind_direction_10m,weather_code,precipitation",
+        "hourly": "temperature_2m,relative_humidity_2m,precipitation_probability,weather_code",
+        "daily": "temperature_2m_max,temperature_2m_min,weather_code,sunrise,sunset,moonrise,moonset",
         "timezone": "auto"
     }
 

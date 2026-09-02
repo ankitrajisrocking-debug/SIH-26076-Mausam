@@ -1,10 +1,43 @@
 import 'package:flutter/material.dart';
 
-class AlertCard extends StatelessWidget {
+import '../services/weather_service.dart';
+
+class AlertCard extends StatefulWidget {
   const AlertCard({super.key});
 
   @override
+  State<AlertCard> createState() => _AlertCardState();
+}
+
+class _AlertCardState extends State<AlertCard> {
+  final WeatherService _weatherService = WeatherService();
+  WeatherData? _weather;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadWeather();
+  }
+
+  Future<void> _loadWeather() async {
+    try {
+      final weather = await _weatherService.getWeather();
+      if (mounted) setState(() => _weather = weather);
+    } catch (error) {
+      debugPrint('Error loading alert weather data: $error');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final issuedAt = DateTime.now();
+    final validUntil = issuedAt.add(const Duration(hours: 3));
+    final rain = _weather?.weatherCode != null && _weather!.weatherCode >= 51;
+    final alertText = rain
+        ? '- Rain conditions detected at the current location'
+        : '- No significant precipitation detected at the current location';
+    final status = rain ? 'ALERT (BE PREPARED)' : 'NO ACTIVE ALERT';
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(22),
@@ -26,7 +59,7 @@ class AlertCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
               Icon(
                 Icons.location_on_rounded,
@@ -45,7 +78,7 @@ class AlertCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 18),
-          const Row(
+          Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Icon(
@@ -56,7 +89,7 @@ class AlertCard extends StatelessWidget {
               SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  '- Light rain: < 5 mm/hr\n\n- Light thunderstorms with maximum surface wind speed less than 40 kmph (in gusts)',
+                  alertText,
                   style: TextStyle(
                     fontSize: 16,
                     height: 1.4,
@@ -72,7 +105,7 @@ class AlertCard extends StatelessWidget {
               Expanded(
                 child: _InfoBox(
                   title: 'Date of issue',
-                  value: '2026-09-01\n1600 hours',
+                  value: _formatDateTime(issuedAt),
                   icon: Icons.calendar_today_rounded,
                 ),
               ),
@@ -80,7 +113,7 @@ class AlertCard extends StatelessWidget {
               Expanded(
                 child: _InfoBox(
                   title: 'Valid up to',
-                  value: '2026-09-01\n1900 hours',
+                  value: _formatDateTime(validUntil),
                   icon: Icons.event_available_rounded,
                 ),
               ),
@@ -94,9 +127,9 @@ class AlertCard extends StatelessWidget {
               color: Colors.black12,
               borderRadius: BorderRadius.circular(22),
             ),
-            child: const Center(
+            child: Center(
               child: Text(
-                'ALERT (BE PREPARED)',
+                status,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -109,6 +142,10 @@ class AlertCard extends StatelessWidget {
       ),
     );
   }
+
+  String _formatDateTime(DateTime value) =>
+      '${value.year}-${value.month.toString().padLeft(2, '0')}-${value.day.toString().padLeft(2, '0')}\n'
+      '${value.hour.toString().padLeft(2, '0')}${value.minute.toString().padLeft(2, '0')} hours';
 }
 
 class _InfoBox extends StatelessWidget {

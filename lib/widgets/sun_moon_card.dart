@@ -1,42 +1,77 @@
 import 'package:flutter/material.dart';
 
+import '../services/weather_service.dart';
+
 class SunMoonSection extends StatelessWidget {
   const SunMoonSection({super.key});
+
+  static final WeatherService _weatherService = WeatherService();
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final compact = constraints.maxWidth < 380;
+      child: FutureBuilder<SunMoonData>(
+        future: _weatherService.getSunMoon(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const SizedBox(
+              height: 220,
+              child: Center(
+                child: CircularProgressIndicator(color: Colors.white),
+              ),
+            );
+          }
+          if (snapshot.hasError) {
+            return const SizedBox(
+              height: 220,
+              child: Center(
+                child: Text(
+                  'Unable to load sun and moon times.',
+                  style: TextStyle(color: Colors.white70),
+                ),
+              ),
+            );
+          }
+
+          final data = snapshot.data!;
           final cards = [
-            const _SkyCard(
+            _SkyCard(
               title: 'Sun',
-              startTime: '05:00',
-              endTime: '17:38',
+              startTime: data.sunrise,
+              endTime: data.sunset,
               icon: Icons.wb_sunny_rounded,
-              accent: Color(0xFFFFD166),
+              accent: const Color(0xFFFFD166),
             ),
-            const _SkyCard(
+            _SkyCard(
               title: 'Moon',
-              startTime: '20:03',
-              endTime: '08:39',
+              startTime: data.moonrise,
+              endTime: data.moonset,
               icon: Icons.nightlight_round_rounded,
-              accent: Color(0xFFB9C8FF),
+              accent: const Color(0xFFB9C8FF),
             ),
           ];
-          return compact
-              ? Column(
-                  children: [cards[0], const SizedBox(height: 16), cards[1]],
-                )
-              : Row(
-                  children: [
-                    Expanded(child: cards[0]),
-                    const SizedBox(width: 16),
-                    Expanded(child: cards[1]),
-                  ],
-                );
+
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              final compact = constraints.maxWidth < 380;
+              return compact
+                  ? Column(
+                      children: [
+                        cards[0],
+                        const SizedBox(height: 16),
+                        cards[1],
+                      ],
+                    )
+                  : Row(
+                      children: [
+                        Expanded(child: cards[0]),
+                        const SizedBox(width: 16),
+                        Expanded(child: cards[1]),
+                      ],
+                    );
+            },
+          );
         },
       ),
     );
@@ -44,12 +79,6 @@ class SunMoonSection extends StatelessWidget {
 }
 
 class _SkyCard extends StatelessWidget {
-  final String title;
-  final String startTime;
-  final String endTime;
-  final IconData icon;
-  final Color accent;
-
   const _SkyCard({
     required this.title,
     required this.startTime,
@@ -57,6 +86,12 @@ class _SkyCard extends StatelessWidget {
     required this.icon,
     required this.accent,
   });
+
+  final String title;
+  final DateTime startTime;
+  final DateTime endTime;
+  final IconData icon;
+  final Color accent;
 
   @override
   Widget build(BuildContext context) {
@@ -90,42 +125,40 @@ class _SkyCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                children: [
-                  Text(
-                    startTime,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const Text(
-                    'IST',
-                    style: TextStyle(color: Colors.white70, fontSize: 12),
-                  ),
-                ],
-              ),
-              Column(
-                children: [
-                  Text(
-                    endTime,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const Text(
-                    'IST',
-                    style: TextStyle(color: Colors.white70, fontSize: 12),
-                  ),
-                ],
-              ),
+              _TimeValue(value: startTime),
+              _TimeValue(value: endTime),
             ],
           ),
         ],
       ),
+    );
+  }
+}
+
+class _TimeValue extends StatelessWidget {
+  const _TimeValue({required this.value});
+
+  final DateTime value;
+
+  @override
+  Widget build(BuildContext context) {
+    final time =
+        '${value.hour.toString().padLeft(2, '0')}:${value.minute.toString().padLeft(2, '0')}';
+    return Column(
+      children: [
+        Text(
+          time,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const Text(
+          'IST',
+          style: TextStyle(color: Colors.white70, fontSize: 12),
+        ),
+      ],
     );
   }
 }

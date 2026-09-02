@@ -14,7 +14,13 @@ class _CurrentWeatherState extends State<CurrentWeather> {
 
   double? temperature;
   double? windSpeed;
-  
+  double? feelsLikeTemperature;
+  double? maxTemperature;
+  double? minTemperature;
+  double? humidity;
+  double? aqi;
+  int? weatherCode;
+
   DateTime? updatedAt;
 
   @override
@@ -30,6 +36,12 @@ class _CurrentWeatherState extends State<CurrentWeather> {
       setState(() {
         temperature = weather.temperature;
         windSpeed = weather.windSpeed;
+        feelsLikeTemperature = weather.feelsLike;
+        maxTemperature = weather.maxTemp;
+        minTemperature = weather.minTemp;
+        humidity = weather.humidity;
+        aqi = weather.aqi;
+        weatherCode = weather.weatherCode;
         updatedAt = DateTime.now();
       });
     } catch (e) {
@@ -49,15 +61,11 @@ class _CurrentWeatherState extends State<CurrentWeather> {
     final currentTemp = temperature == null
         ? '--'
         : temperature!.toStringAsFixed(1);
-    final feelsLike = temperature == null
-        ? '--'
-        : (temperature! + 1.7).toStringAsFixed(1);
-    final maxTemp = temperature == null
-        ? '--'
-        : (temperature! + 2.8).toStringAsFixed(1);
-    final minTemp = temperature == null
-        ? '--'
-        : (temperature! - 2.1).toStringAsFixed(1);
+    final feelsLike = feelsLikeTemperature?.toStringAsFixed(1) ?? '--';
+    final maxTemp = maxTemperature?.toStringAsFixed(1) ?? '--';
+    final minTemp = minTemperature?.toStringAsFixed(1) ?? '--';
+    final humidityValue = humidity?.toStringAsFixed(0) ?? '--';
+    final aqiValue = aqi?.toStringAsFixed(0) ?? '--';
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -133,8 +141,8 @@ class _CurrentWeatherState extends State<CurrentWeather> {
                       ),
                     ),
                     const SizedBox(height: 18),
-                    const Text(
-                      'Cloudy skies with occasional rain',
+                    Text(
+                      _weatherDescription(weatherCode),
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,
@@ -220,7 +228,7 @@ class _CurrentWeatherState extends State<CurrentWeather> {
                 ),
                 _WeatherInfoChip(
                   label: 'Humidity',
-                  value: '73%',
+                  value: '$humidityValue%',
                   color: const Color(0xFF8AD5FF),
                 ),
               ],
@@ -247,8 +255,8 @@ class _CurrentWeatherState extends State<CurrentWeather> {
                         bottomLeft: Radius.circular(12),
                       ),
                     ),
-                    child: const Text(
-                      'AQI 53',
+                    child: Text(
+                      'AQI $aqiValue',
                       style: TextStyle(
                         color: Color(0xFF0F2E12),
                         fontSize: 16,
@@ -269,8 +277,8 @@ class _CurrentWeatherState extends State<CurrentWeather> {
                           bottomRight: Radius.circular(12),
                         ),
                       ),
-                      child: const Text(
-                        'Satisfactory',
+                      child: Text(
+                        _aqiDescription(aqi),
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Color(0xFF0D2C12),
@@ -292,6 +300,25 @@ class _CurrentWeatherState extends State<CurrentWeather> {
         ),
       ),
     );
+  }
+
+  String _weatherDescription(int? code) {
+    if (code == null) return 'Loading weather conditions';
+    if (code == 0) return 'Clear skies';
+    if (code <= 3) return 'Cloudy skies';
+    if (code >= 95) return 'Thunderstorms';
+    if (code >= 51) return 'Rain showers';
+    return 'Overcast skies';
+  }
+
+  String _aqiDescription(double? value) {
+    if (value == null) return 'Unavailable';
+    if (value <= 50) return 'Good';
+    if (value <= 100) return 'Satisfactory';
+    if (value <= 150) return 'Unhealthy for sensitive groups';
+    if (value <= 200) return 'Unhealthy';
+    if (value <= 300) return 'Very unhealthy';
+    return 'Hazardous';
   }
 }
 
