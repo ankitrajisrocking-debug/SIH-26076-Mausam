@@ -89,13 +89,12 @@ DateTime? updatedAt;
         ),
         child: Column(
           children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final isCompact = constraints.maxWidth < 390;
+                final weatherSummary = Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                       const Text(
                         'Now',
                         style: TextStyle(
@@ -147,13 +146,11 @@ DateTime? updatedAt;
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Container(
-                  width: 150,
-                  height: 150,
+                  ],
+                );
+                final windIndicator = Container(
+                  width: isCompact ? 128 : 150,
+                  height: isCompact ? 128 : 150,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(color: Colors.white30, width: 3),
@@ -163,11 +160,7 @@ DateTime? updatedAt;
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
-                          Icons.air_rounded,
-                          color: Color(0xFFBCE7FF),
-                          size: 34,
-                        ),
+                        Icon(Icons.air_rounded, color: Color(0xFFBCE7FF), size: 34),
                         SizedBox(height: 8),
                         Text(
                           windSpeed,
@@ -177,15 +170,32 @@ DateTime? updatedAt;
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        Text(
-                          'km/h',
-                          style: TextStyle(color: Colors.white70, fontSize: 14),
-                        ),
+                        Text('km/h', style: TextStyle(color: Colors.white70, fontSize: 14)),
                       ],
                     ),
                   ),
-                ),
-              ],
+                );
+
+                if (isCompact) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      weatherSummary,
+                      const SizedBox(height: 18),
+                      Center(child: windIndicator),
+                    ],
+                  );
+                }
+
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(child: weatherSummary),
+                    const SizedBox(width: 12),
+                    windIndicator,
+                  ],
+                );
+              },
             ),
             const SizedBox(height: 22),
             Wrap(
