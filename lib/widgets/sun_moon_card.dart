@@ -3,16 +3,16 @@ import 'package:flutter/material.dart';
 import '../services/weather_service.dart';
 
 class SunMoonSection extends StatelessWidget {
-  const SunMoonSection({super.key});
+  const SunMoonSection({super.key, required this.weatherService});
 
-  static final WeatherService _weatherService = WeatherService();
+  final WeatherService weatherService;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: FutureBuilder<SunMoonData>(
-        future: _weatherService.getSunMoon(),
+        future: weatherService.getSunMoon(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const SizedBox(

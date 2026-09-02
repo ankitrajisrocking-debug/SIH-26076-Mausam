@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import '../services/weather_service.dart';
 
 class HourlyForecast extends StatelessWidget {
-  const HourlyForecast({super.key});
+  const HourlyForecast({super.key, required this.weatherService});
 
-  static final WeatherService _weatherService = WeatherService();
+  final WeatherService weatherService;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +18,7 @@ class HourlyForecast extends StatelessWidget {
         border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
       ),
       child: FutureBuilder<List<HourlyForecastHour>>(
-        future: _weatherService.getHourlyForecast(),
+        future: weatherService.getHourlyForecast(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const SizedBox(

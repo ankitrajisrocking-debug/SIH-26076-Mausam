@@ -3,14 +3,20 @@ import 'package:flutter/material.dart';
 import '../services/weather_service.dart';
 
 class AlertCard extends StatefulWidget {
-  const AlertCard({super.key});
+  const AlertCard({
+    super.key,
+    required this.locationName,
+    required this.weatherService,
+  });
+
+  final String locationName;
+  final WeatherService weatherService;
 
   @override
   State<AlertCard> createState() => _AlertCardState();
 }
 
 class _AlertCardState extends State<AlertCard> {
-  final WeatherService _weatherService = WeatherService();
   WeatherData? _weather;
 
   @override
@@ -21,7 +27,7 @@ class _AlertCardState extends State<AlertCard> {
 
   Future<void> _loadWeather() async {
     try {
-      final weather = await _weatherService.getWeather();
+      final weather = await widget.weatherService.getWeather();
       if (mounted) setState(() => _weather = weather);
     } catch (error) {
       debugPrint('Error loading alert weather data: $error');
@@ -32,10 +38,12 @@ class _AlertCardState extends State<AlertCard> {
   Widget build(BuildContext context) {
     final issuedAt = DateTime.now();
     final validUntil = issuedAt.add(const Duration(hours: 3));
-    final rain = _weather?.weatherCode != null && _weather!.weatherCode >= 51;
+    final rain =
+        _weather != null &&
+        (_weather!.weatherCode >= 51 || _weather!.precipitation > 0);
     final alertText = rain
-        ? '- Rain conditions detected at the current location'
-        : '- No significant precipitation detected at the current location';
+        ? '- Precipitation: ${_weather?.precipitation.toStringAsFixed(1) ?? '--'} mm'
+        : '- No precipitation detected at the current location';
     final status = rain ? 'ALERT (BE PREPARED)' : 'NO ACTIVE ALERT';
 
     return Container(
@@ -68,7 +76,7 @@ class _AlertCardState extends State<AlertCard> {
               ),
               SizedBox(width: 8),
               Text(
-                'CACHAR',
+                widget.locationName.toUpperCase(),
                 style: TextStyle(
                   fontSize: 26,
                   fontWeight: FontWeight.bold,
