@@ -9,6 +9,7 @@ class WeatherData {
   final double windDirection;
   final double maxTemp;
   final double minTemp;
+  final double aqi; // 🟢 ADD
 
   WeatherData({
     required this.temperature,
@@ -18,6 +19,7 @@ class WeatherData {
     required this.windDirection,
     required this.maxTemp,
     required this.minTemp,
+    required this.aqi, // 🟢 ADD
   });
 }
 
@@ -53,6 +55,9 @@ class WeatherService {
 
         minTemp:
             (data['daily']['temperature_2m_min'][0] as num).toDouble(),
+
+         aqi:
+            (data['air_quality']['current']['us_aqi'] as num).toDouble(),   
       );
     } else {
       throw Exception('Failed to load weather');
