@@ -9,6 +9,8 @@ def weather():
 
     latitude = request.args.get("lat")
     longitude = request.args.get("lon")
+    if not latitude or not longitude:
+        return jsonify({"error": "lat and lon are required"}), 400
 
     # Weather API
     url = "https://api.open-meteo.com/v1/forecast"
@@ -22,7 +24,7 @@ def weather():
         "timezone": "auto"
     }
 
-    response = requests.get(url, params=params)
+    response = requests.get(url, params=params, timeout=10)
     response.raise_for_status()
 
     data = response.json()
@@ -37,7 +39,7 @@ def weather():
         "timezone": "auto"
     }
 
-    aqi_response = requests.get(aqi_url, params=aqi_params)
+    aqi_response = requests.get(aqi_url, params=aqi_params, timeout=10)
     aqi_response.raise_for_status()
 
     aqi_data = aqi_response.json()
