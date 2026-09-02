@@ -68,6 +68,7 @@ class WeatherData {
     required this.minTemp,
     required this.aqi,
     required this.weatherCode,
+    required this.precipitation,
   });
 
   final double temperature;
@@ -79,20 +80,39 @@ class WeatherData {
   final double minTemp;
   final double? aqi;
   final int weatherCode;
+  final double precipitation;
+}
+
+class WeatherLocation {
+  const WeatherLocation({
+    required this.name,
+    required this.latitude,
+    required this.longitude,
+  });
+
+  final String name;
+  final double latitude;
+  final double longitude;
 }
 
 class WeatherService {
-  WeatherService({http.Client? client, String? baseUrl})
-    : _client = client ?? http.Client(),
-      _baseUrl =
-          baseUrl ??
-          const String.fromEnvironment(
-            'WEATHER_API_BASE_URL',
-            defaultValue: _defaultWeatherApiBaseUrl,
-          );
+  WeatherService({
+    http.Client? client,
+    String? baseUrl,
+    this.latitude = 24.75,
+    this.longitude = 92.79,
+  }) : _client = client ?? http.Client(),
+       _baseUrl =
+           baseUrl ??
+           const String.fromEnvironment(
+             'WEATHER_API_BASE_URL',
+             defaultValue: _defaultWeatherApiBaseUrl,
+           );
 
   final http.Client _client;
   final String _baseUrl;
+  final double latitude;
+  final double longitude;
 
   Future<double> getTemperature() async {
     final weather = await getWeather();
@@ -127,7 +147,45 @@ class WeatherService {
       minTemp: (minTemperatures[0] as num).toDouble(),
       aqi: (airQualityCurrent?['us_aqi'] as num?)?.toDouble(),
       weatherCode: (current['weather_code'] as num).toInt(),
+      precipitation: (current['precipitation'] as num?)?.toDouble() ?? 0,
     );
+  }
+
+  Future<List<WeatherLocation>> searchLocations(String query) async {
+    final url = Uri.https('geocoding-api.open-meteo.com', '/v1/search', {
+      'name': query,
+      'count': '8',
+      'language': 'en',
+      'format': 'json',
+    });
+    final response = await _client
+        .get(url)
+        .timeout(const Duration(seconds: 10));
+    if (response.statusCode != 200) {
+      throw http.ClientException(
+        'Geocoding API returned HTTP ${response.statusCode}',
+        url,
+      );
+    }
+    final decoded = jsonDecode(response.body);
+    final results = decoded is Map<String, dynamic>
+        ? decoded['results'] as List<dynamic>?
+        : null;
+    if (results == null) return const [];
+    return results.whereType<Map<String, dynamic>>().map((result) {
+      final name = result['name'] as String?;
+      final resultLatitude = result['latitude'] as num?;
+      final resultLongitude = result['longitude'] as num?;
+      if (name == null || resultLatitude == null || resultLongitude == null) {
+        throw const FormatException('Invalid location search result');
+      }
+      final admin = result['admin1'] as String?;
+      return WeatherLocation(
+        name: admin == null ? name : '$name, $admin',
+        latitude: resultLatitude.toDouble(),
+        longitude: resultLongitude.toDouble(),
+      );
+    }).toList();
   }
 
   Future<List<HourlyForecastHour>> getHourlyForecast() async {
@@ -214,8 +272,12 @@ class WeatherService {
   }
 
   Future<Map<String, dynamic>> _fetchWeather() async {
-    final url = Uri.parse('$_baseUrl/weather')
-        .replace(queryParameters: const {'lat': '24.75', 'lon': '92.79'});
+    final url = Uri.parse('$_baseUrl/weather').replace(
+      queryParameters: {
+        'lat': latitude.toString(),
+        'lon': longitude.toString(),
+      },
+    );
     final response = await _client
         .get(url)
         .timeout(const Duration(seconds: 10));

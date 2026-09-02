@@ -3,15 +3,15 @@ import 'package:flutter/material.dart';
 import '../services/weather_service.dart';
 
 class CurrentWeather extends StatefulWidget {
-  const CurrentWeather({super.key});
+  const CurrentWeather({super.key, required this.weatherService});
+
+  final WeatherService weatherService;
 
   @override
   State<CurrentWeather> createState() => _CurrentWeatherState();
 }
 
 class _CurrentWeatherState extends State<CurrentWeather> {
-  final WeatherService weatherService = WeatherService();
-
   double? temperature;
   double? windSpeed;
   double? feelsLikeTemperature;
@@ -31,7 +31,7 @@ class _CurrentWeatherState extends State<CurrentWeather> {
 
   Future<void> loadTemperature() async {
     try {
-      final weather = await weatherService.getWeather();
+      final weather = await widget.weatherService.getWeather();
 
       setState(() {
         temperature = weather.temperature;

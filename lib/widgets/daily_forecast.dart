@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import '../services/weather_service.dart';
 
 class DailyForecast extends StatelessWidget {
-  const DailyForecast({super.key});
+  const DailyForecast({super.key, required this.weatherService});
 
-  static final WeatherService _weatherService = WeatherService();
+  final WeatherService weatherService;
 
   IconData _iconForWeatherCode(int code) {
     if (code == 0 || code == 1) {
@@ -34,7 +34,7 @@ class DailyForecast extends StatelessWidget {
         border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
       ),
       child: FutureBuilder<List<DailyForecastDay>>(
-        future: _weatherService.getDailyForecast(),
+        future: weatherService.getDailyForecast(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Padding(

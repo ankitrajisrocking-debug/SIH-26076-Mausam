@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 
 class TopHeader extends StatelessWidget {
-  const TopHeader({super.key});
+  const TopHeader({
+    super.key,
+    required this.locationName,
+    required this.onSearch,
+  });
+
+  final String locationName;
+  final VoidCallback onSearch;
 
   @override
   Widget build(BuildContext context) {
@@ -32,9 +39,9 @@ class TopHeader extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              const Expanded(
+              Expanded(
                 child: Text(
-                  'NIT Silchar',
+                  locationName,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: Colors.white,
@@ -52,7 +59,7 @@ class TopHeader extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: IconButton(
-                  onPressed: () {},
+                  onPressed: onSearch,
                   icon: const Icon(
                     Icons.search_rounded,
                     color: Colors.white,
