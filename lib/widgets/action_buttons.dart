@@ -63,8 +63,8 @@ class _ActionButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(22),
         onTap: () {},
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14),
-          child: Row(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
@@ -72,13 +72,18 @@ class _ActionButton extends StatelessWidget {
                 size: 28,
                 color: const Color(0xFF0D4D7B),
               ),
-              const SizedBox(width: 10),
-              Text(
-                text,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF0D4D7B),
+              const SizedBox(height: 6),
+              Flexible(
+                child: Text(
+                  text,
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF0D4D7B),
+                  ),
                 ),
               ),
             ],
