@@ -5,7 +5,7 @@ class WeatherService {
   Future<double> getTemperature() async {
 
     final url = Uri.parse(
-      'http://192.168.77.91:5000/weather?lat=24.75&lon=92.79',
+      'http://10.0.2.2:5000/weather?lat=24.75&lon=92.79',
     );
 
     final response = await http.get(url);
