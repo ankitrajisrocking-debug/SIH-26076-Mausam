@@ -35,26 +35,31 @@ class SunMoonSection extends StatelessWidget {
           }
 
           final data = snapshot.data!;
-          final cards = [
-            _SkyCard(
-              title: 'Sun',
-              startTime: data.sunrise,
-              endTime: data.sunset,
-              icon: Icons.wb_sunny_rounded,
-              accent: const Color(0xFFFFD166),
-            ),
-            _SkyCard(
-              title: 'Moon',
-              startTime: data.moonrise,
-              endTime: data.moonset,
-              icon: Icons.nightlight_round_rounded,
-              accent: const Color(0xFFB9C8FF),
-            ),
-          ];
-
           return LayoutBuilder(
             builder: (context, constraints) {
               final compact = constraints.maxWidth < 380;
+              final cardHeight = (constraints.maxWidth * 0.58).clamp(
+                180.0,
+                220.0,
+              );
+              final cards = [
+                _SkyCard(
+                  title: 'Sun',
+                  startTime: data.sunrise,
+                  endTime: data.sunset,
+                  icon: Icons.wb_sunny_rounded,
+                  accent: const Color(0xFFFFD166),
+                  height: cardHeight,
+                ),
+                _SkyCard(
+                  title: 'Moon',
+                  startTime: data.moonrise,
+                  endTime: data.moonset,
+                  icon: Icons.nightlight_round_rounded,
+                  accent: const Color(0xFFB9C8FF),
+                  height: cardHeight,
+                ),
+              ];
               return compact
                   ? Column(
                       children: [
@@ -85,6 +90,7 @@ class _SkyCard extends StatelessWidget {
     required this.endTime,
     required this.icon,
     required this.accent,
+    required this.height,
   });
 
   final String title;
@@ -92,11 +98,12 @@ class _SkyCard extends StatelessWidget {
   final DateTime endTime;
   final IconData icon;
   final Color accent;
+  final double height;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 220,
+      height: height,
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.08),

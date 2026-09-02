@@ -17,6 +17,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  int _refreshToken = 0;
+
   WeatherLocation _location = const WeatherLocation(
     name: 'NIT Silchar',
     latitude: 24.75,
@@ -34,7 +36,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> refreshWeather() async {
-    setState(() {});
+    setState(() => _refreshToken++);
   }
 
   @override
@@ -64,6 +66,9 @@ class _HomePageState extends State<HomePage> {
                   ),
                   SizedBox(height: 20),
                   CurrentWeather(
+                    key: ValueKey(
+                      'current-${_location.latitude}-${_location.longitude}-$_refreshToken',
+                    ),
                     weatherService: WeatherService(
                       latitude: _location.latitude,
                       longitude: _location.longitude,
@@ -71,6 +76,9 @@ class _HomePageState extends State<HomePage> {
                   ),
                   SizedBox(height: 20),
                   HourlyForecast(
+                    key: ValueKey(
+                      'hourly-${_location.latitude}-${_location.longitude}-$_refreshToken',
+                    ),
                     weatherService: WeatherService(
                       latitude: _location.latitude,
                       longitude: _location.longitude,
@@ -80,6 +88,9 @@ class _HomePageState extends State<HomePage> {
                   ActionButtons(),
                   SizedBox(height: 20),
                   AlertCard(
+                    key: ValueKey(
+                      'alert-${_location.latitude}-${_location.longitude}-$_refreshToken',
+                    ),
                     locationName: _location.name,
                     weatherService: WeatherService(
                       latitude: _location.latitude,
@@ -90,6 +101,9 @@ class _HomePageState extends State<HomePage> {
                   InteractiveMapButton(),
                   SizedBox(height: 24),
                   DailyForecast(
+                    key: ValueKey(
+                      'daily-${_location.latitude}-${_location.longitude}-$_refreshToken',
+                    ),
                     weatherService: WeatherService(
                       latitude: _location.latitude,
                       longitude: _location.longitude,
@@ -97,6 +111,9 @@ class _HomePageState extends State<HomePage> {
                   ),
                   SizedBox(height: 24),
                   SunMoonSection(
+                    key: ValueKey(
+                      'sun-moon-${_location.latitude}-${_location.longitude}-$_refreshToken',
+                    ),
                     weatherService: WeatherService(
                       latitude: _location.latitude,
                       longitude: _location.longitude,

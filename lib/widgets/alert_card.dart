@@ -25,6 +25,15 @@ class _AlertCardState extends State<AlertCard> {
     _loadWeather();
   }
 
+  @override
+  void didUpdateWidget(covariant AlertCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.weatherService.latitude != widget.weatherService.latitude ||
+        oldWidget.weatherService.longitude != widget.weatherService.longitude) {
+      _loadWeather();
+    }
+  }
+
   Future<void> _loadWeather() async {
     try {
       final weather = await widget.weatherService.getWeather();
@@ -48,7 +57,7 @@ class _AlertCardState extends State<AlertCard> {
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
-      padding: const EdgeInsets.all(22),
+      padding: EdgeInsets.zero,
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
@@ -64,89 +73,109 @@ class _AlertCardState extends State<AlertCard> {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                Icons.location_on_rounded,
-                size: 28,
-                color: Color(0xFF0A2C44),
-              ),
-              SizedBox(width: 8),
-              Text(
-                widget.locationName.toUpperCase(),
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF0A2C44),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final horizontalPadding = (constraints.maxWidth * 0.06).clamp(
+            14.0,
+            22.0,
+          );
+          final titleSize = (constraints.maxWidth * 0.07).clamp(18.0, 26.0);
+          final bodySize = (constraints.maxWidth * 0.042).clamp(13.0, 16.0);
+          return Padding(
+            padding: EdgeInsets.all(horizontalPadding),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.location_on_rounded,
+                      size: 28,
+                      color: Color(0xFF0A2C44),
+                    ),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        widget.locationName.toUpperCase(),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: titleSize,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF0A2C44),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 18),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(
-                Icons.warning_amber_rounded,
-                size: 24,
-                color: Color(0xFF0A2C44),
-              ),
-              SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  alertText,
-                  style: TextStyle(
-                    fontSize: 16,
-                    height: 1.4,
-                    color: Color(0xFF0A2C44),
+                const SizedBox(height: 18),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      Icons.warning_amber_rounded,
+                      size: 24,
+                      color: Color(0xFF0A2C44),
+                    ),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        alertText,
+                        style: TextStyle(
+                          fontSize: bodySize,
+                          height: 1.4,
+                          color: Color(0xFF0A2C44),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 18),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _InfoBox(
+                        title: 'Date of issue',
+                        value: _formatDateTime(issuedAt),
+                        icon: Icons.calendar_today_rounded,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _InfoBox(
+                        title: 'Valid up to',
+                        value: _formatDateTime(validUntil),
+                        icon: Icons.event_available_rounded,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 18),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.black12,
+                    borderRadius: BorderRadius.circular(22),
+                  ),
+                  child: Center(
+                    child: Text(
+                      status,
+                      style: TextStyle(
+                        fontSize: (constraints.maxWidth * 0.047).clamp(
+                          15.0,
+                          18.0,
+                        ),
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF0A2C44),
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 18),
-          Row(
-            children: [
-              Expanded(
-                child: _InfoBox(
-                  title: 'Date of issue',
-                  value: _formatDateTime(issuedAt),
-                  icon: Icons.calendar_today_rounded,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _InfoBox(
-                  title: 'Valid up to',
-                  value: _formatDateTime(validUntil),
-                  icon: Icons.event_available_rounded,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 18),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            decoration: BoxDecoration(
-              color: Colors.black12,
-              borderRadius: BorderRadius.circular(22),
+              ],
             ),
-            child: Center(
-              child: Text(
-                status,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF0A2C44),
-                ),
-              ),
-            ),
-          ),
-        ],
+          );
+        },
       ),
     );
   }

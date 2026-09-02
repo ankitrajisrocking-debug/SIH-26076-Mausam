@@ -29,6 +29,15 @@ class _CurrentWeatherState extends State<CurrentWeather> {
     loadTemperature();
   }
 
+  @override
+  void didUpdateWidget(covariant CurrentWeather oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.weatherService.latitude != widget.weatherService.latitude ||
+        oldWidget.weatherService.longitude != widget.weatherService.longitude) {
+      loadTemperature();
+    }
+  }
+
   Future<void> loadTemperature() async {
     try {
       final weather = await widget.weatherService.getWeather();
@@ -92,7 +101,17 @@ class _CurrentWeatherState extends State<CurrentWeather> {
             LayoutBuilder(
               builder: (context, constraints) {
                 final compact = constraints.maxWidth < 390;
-                final windSize = compact ? 112.0 : 150.0;
+                final windSize =
+                    (constraints.maxWidth * (compact ? 0.35 : 0.38)).clamp(
+                      96.0,
+                      150.0,
+                    );
+                final temperatureFontSize = (constraints.maxWidth * 0.17).clamp(
+                  42.0,
+                  62.0,
+                );
+                final descriptionFontSize = (constraints.maxWidth * 0.045)
+                    .clamp(13.0, 16.0);
                 final summary = Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -109,13 +128,17 @@ class _CurrentWeatherState extends State<CurrentWeather> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Flexible(
-                          child: Text(
-                            "$currentTemp°",
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 62,
-                              fontWeight: FontWeight.bold,
-                              height: 1,
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              "$currentTemp°",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: temperatureFontSize,
+                                fontWeight: FontWeight.bold,
+                                height: 1,
+                              ),
                             ),
                           ),
                         ),
@@ -145,9 +168,11 @@ class _CurrentWeatherState extends State<CurrentWeather> {
                       _weatherDescription(weatherCode),
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 16,
+                        fontSize: descriptionFontSize,
                         fontWeight: FontWeight.w500,
                       ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 );
