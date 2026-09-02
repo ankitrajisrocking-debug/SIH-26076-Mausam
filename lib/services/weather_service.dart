@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-const _defaultWeatherApiBaseUrl = 'http://192.168.77.91:5000';
+const _defaultWeatherApiBaseUrl = 'http://192.168.137.1:5000';
 
 class DailyForecastDay {
   const DailyForecastDay({
