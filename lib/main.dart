@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'screens/home_page.dart';
 
 void main() {
@@ -22,7 +23,7 @@ class MausamApp extends StatelessWidget {
           brightness: Brightness.dark,
         ),
       ),
-      home: const HomePage(),
+      home: HomePage(),
     );
   }
 }
