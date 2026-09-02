@@ -14,6 +14,7 @@ class _CurrentWeatherState extends State<CurrentWeather> {
 
   double? temperature;
   double? windSpeed;
+  
   DateTime? updatedAt;
 
   @override
