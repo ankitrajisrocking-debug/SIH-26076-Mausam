@@ -13,6 +13,7 @@ class _CurrentWeatherState extends State<CurrentWeather> {
   final WeatherService weatherService = WeatherService();
 
   double? temperature;
+  double? windSpeed;
   DateTime? updatedAt;
 
   @override
@@ -23,10 +24,11 @@ class _CurrentWeatherState extends State<CurrentWeather> {
 
   Future<void> loadTemperature() async {
     try {
-      final temp = await weatherService.getTemperature();
+      final weather = await weatherService.getWeather();
 
       setState(() {
-        temperature = temp;
+        temperature = weather.temperature;
+        windSpeed = weather.windSpeed;
         updatedAt = DateTime.now();
       });
     } catch (e) {
@@ -148,25 +150,25 @@ class _CurrentWeatherState extends State<CurrentWeather> {
                     border: Border.all(color: Colors.white30, width: 3),
                     color: Colors.white.withOpacity(0.08),
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.air_rounded,
                           color: Color(0xFFBCE7FF),
                           size: 34,
                         ),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         Text(
-                          '4.4',
-                          style: TextStyle(
+                          windSpeed?.toStringAsFixed(1) ?? '--',
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        Text(
+                        const Text(
                           'km/h',
                           style: TextStyle(color: Colors.white70, fontSize: 14),
                         ),

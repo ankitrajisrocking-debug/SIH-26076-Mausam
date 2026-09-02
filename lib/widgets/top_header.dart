@@ -5,6 +5,10 @@ class TopHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final today = DateTime.now();
+    final dateLabel =
+        '${today.day.toString().padLeft(2, '0')} ${_monthName(today.month)} ${today.year}';
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 18, 20, 8),
       child: Column(
@@ -59,10 +63,10 @@ class TopHeader extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          const Align(
+          Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              '01 September 2026',
+              dateLabel,
               style: TextStyle(
                 color: Colors.white70,
                 fontSize: 16,
@@ -73,5 +77,23 @@ class TopHeader extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _monthName(int month) {
+    const months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
+    return months[month - 1];
   }
 }

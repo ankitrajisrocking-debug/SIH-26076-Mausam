@@ -5,11 +5,38 @@ class HourlyForecast extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final today = DateTime.now();
+    final dateLabel =
+        '${today.day.toString().padLeft(2, '0')} ${_monthName(today.month).substring(0, 3)}';
     final List<Map<String, dynamic>> hours = [
-      {'time': '14:30', 'weather': 'Cloudy', 'temp': '29.7°C', 'humidity': '73%', 'icon': Icons.cloud_rounded},
-      {'time': '17:30', 'weather': 'Rain', 'temp': '25.7°C', 'humidity': '90%', 'icon': Icons.thunderstorm_rounded},
-      {'time': '20:30', 'weather': 'Cloudy', 'temp': '25.2°C', 'humidity': '93%', 'icon': Icons.cloud_queue_rounded},
-      {'time': '23:30', 'weather': 'Clear', 'temp': '24.8°C', 'humidity': '88%', 'icon': Icons.wb_sunny_rounded},
+      {
+        'time': '14:30',
+        'weather': 'Cloudy',
+        'temp': '29.7°C',
+        'humidity': '73%',
+        'icon': Icons.cloud_rounded,
+      },
+      {
+        'time': '17:30',
+        'weather': 'Rain',
+        'temp': '25.7°C',
+        'humidity': '90%',
+        'icon': Icons.thunderstorm_rounded,
+      },
+      {
+        'time': '20:30',
+        'weather': 'Cloudy',
+        'temp': '25.2°C',
+        'humidity': '93%',
+        'icon': Icons.cloud_queue_rounded,
+      },
+      {
+        'time': '23:30',
+        'weather': 'Clear',
+        'temp': '24.8°C',
+        'humidity': '88%',
+        'icon': Icons.wb_sunny_rounded,
+      },
     ];
 
     return Container(
@@ -54,7 +81,10 @@ class HourlyForecast extends StatelessWidget {
                 final hour = hours[index];
                 return Container(
                   width: 140,
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 14,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.08),
                     borderRadius: BorderRadius.circular(22),
@@ -63,7 +93,7 @@ class HourlyForecast extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        '01 Sep',
+                        dateLabel,
                         style: TextStyle(
                           color: Colors.white.withValues(alpha: 0.7),
                           fontSize: 12,
@@ -79,11 +109,7 @@ class HourlyForecast extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      Icon(
-                        hour['icon'],
-                        color: Colors.white,
-                        size: 30,
-                      ),
+                      Icon(hour['icon'], color: Colors.white, size: 30),
                       const SizedBox(height: 12),
                       Text(
                         hour['weather'],
@@ -130,5 +156,23 @@ class HourlyForecast extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _monthName(int month) {
+    const months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
+    return months[month - 1];
   }
 }
