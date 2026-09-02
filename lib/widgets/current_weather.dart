@@ -12,25 +12,25 @@ class CurrentWeather extends StatefulWidget {
 class _CurrentWeatherState extends State<CurrentWeather> {
   final WeatherService weatherService = WeatherService();
 
-  double? temperature;
-  DateTime? updatedAt;
+WeatherData? weatherData; // 🟢 CHANGED
+DateTime? updatedAt;
 
   @override
   void initState() {
     super.initState();
-    loadTemperature();
+    loadWeather(); // 🟢 CHANGED
   }
 
-  Future<void> loadTemperature() async {
+  Future<void> loadWeather() async {
     try {
-      final temp = await weatherService.getTemperature();
+      final data = await weatherService.getWeather();
 
       setState(() {
-        temperature = temp;
+        weatherData = data;
         updatedAt = DateTime.now();
       });
     } catch (e) {
-      debugPrint('Error loading temperature: $e');
+      debugPrint('Error loading weather: $e');
     }
   }
 
@@ -43,18 +43,29 @@ class _CurrentWeatherState extends State<CurrentWeather> {
 
   @override
   Widget build(BuildContext context) {
-    final currentTemp = temperature == null
+    final currentTemp = weatherData == null
         ? '--'
-        : temperature!.toStringAsFixed(1);
-    final feelsLike = temperature == null
+        : weatherData!.temperature.toStringAsFixed(1);
+
+    final feelsLike = weatherData == null
         ? '--'
-        : (temperature! + 1.7).toStringAsFixed(1);
-    final maxTemp = temperature == null
+        : weatherData!.feelsLike.toStringAsFixed(1);
+
+    final maxTemp = weatherData == null
         ? '--'
-        : (temperature! + 2.8).toStringAsFixed(1);
-    final minTemp = temperature == null
+        : weatherData!.maxTemp.toStringAsFixed(1);
+
+    final minTemp = weatherData == null
         ? '--'
-        : (temperature! - 2.1).toStringAsFixed(1);
+        : weatherData!.minTemp.toStringAsFixed(1);
+
+    final humidity = weatherData == null
+        ? '--'
+        : weatherData!.humidity.toStringAsFixed(0);
+
+    final windSpeed = weatherData == null
+        ? '--'
+        : weatherData!.windSpeed.toStringAsFixed(1);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -70,7 +81,7 @@ class _CurrentWeatherState extends State<CurrentWeather> {
           borderRadius: BorderRadius.circular(30),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.18),
+              color: Colors.black.withValues(alpha: 0.18),
               blurRadius: 18,
               offset: const Offset(0, 10),
             ),
@@ -143,16 +154,16 @@ class _CurrentWeatherState extends State<CurrentWeather> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(color: Colors.white30, width: 3),
-                    color: Colors.white.withOpacity(0.08),
+                    color: Colors.white.withValues(alpha: 0.08),
                   ),
-                  child: const Center(
+                  child:  Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.air_rounded, color: Color(0xFFBCE7FF), size: 34),
                         SizedBox(height: 8),
                         Text(
-                          '4.4',
+                          windSpeed,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 28,
@@ -194,22 +205,22 @@ class _CurrentWeatherState extends State<CurrentWeather> {
               children: [
                 _WeatherInfoChip(
                   label: 'Feels like',
-                  value: '${feelsLike}°C',
+                  value: '$feelsLike°C',
                   color: const Color(0xFF86D9FF),
                 ),
                 _WeatherInfoChip(
                   label: 'Max',
-                  value: '${maxTemp}°C',
+                  value: '$maxTemp°C',
                   color: const Color(0xFFFFD166),
                 ),
                 _WeatherInfoChip(
                   label: 'Min',
-                  value: '${minTemp}°C',
+                  value: '$minTemp°C',
                   color: const Color(0xFF9DE0C4),
                 ),
                 _WeatherInfoChip(
                   label: 'Humidity',
-                  value: '73%',
+                  value: '$humidity%',
                   color: const Color(0xFF8AD5FF),
                 ),
               ],
@@ -219,7 +230,7 @@ class _CurrentWeatherState extends State<CurrentWeather> {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.08),
+                color: Colors.white.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(18),
               ),
               child: Row(
@@ -300,7 +311,7 @@ class _WeatherInfoChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.08),
+        color: Colors.white.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(14),
       ),
       child: Row(
