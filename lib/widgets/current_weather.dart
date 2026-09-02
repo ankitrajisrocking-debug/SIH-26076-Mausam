@@ -70,7 +70,7 @@ class _CurrentWeatherState extends State<CurrentWeather> {
           borderRadius: BorderRadius.circular(30),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.18),
+              color: Colors.black.withOpacity(0.18),
               blurRadius: 18,
               offset: const Offset(0, 10),
             ),
@@ -146,7 +146,7 @@ class _CurrentWeatherState extends State<CurrentWeather> {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(color: Colors.white30, width: 3),
-                    color: Colors.white.withValues(alpha: 0.08),
+                    color: Colors.white.withOpacity(0.08),
                   ),
                   child: const Center(
                     child: Column(
@@ -202,17 +202,17 @@ class _CurrentWeatherState extends State<CurrentWeather> {
               children: [
                 _WeatherInfoChip(
                   label: 'Feels like',
-                  value: '$feelsLike°C',
+                  value: '${feelsLike}°C',
                   color: const Color(0xFF86D9FF),
                 ),
                 _WeatherInfoChip(
                   label: 'Max',
-                  value: '$maxTemp°C',
+                  value: '${maxTemp}°C',
                   color: const Color(0xFFFFD166),
                 ),
                 _WeatherInfoChip(
                   label: 'Min',
-                  value: '$minTemp°C',
+                  value: '${minTemp}°C',
                   color: const Color(0xFF9DE0C4),
                 ),
                 _WeatherInfoChip(
@@ -227,7 +227,7 @@ class _CurrentWeatherState extends State<CurrentWeather> {
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.08),
+                color: Colors.white.withOpacity(0.08),
                 borderRadius: BorderRadius.circular(18),
               ),
               child: Row(
@@ -308,7 +308,7 @@ class _WeatherInfoChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.08),
+        color: Colors.white.withOpacity(0.08),
         borderRadius: BorderRadius.circular(14),
       ),
       child: Row(
