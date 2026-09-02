@@ -78,71 +78,68 @@ class _CurrentWeatherState extends State<CurrentWeather> {
         ),
         child: Column(
           children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Now',
-                        style: TextStyle(
-                          color: Colors.white70,
-                          fontSize: 14,
-                          letterSpacing: 1.2,
-                        ),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final isCompact = constraints.maxWidth < 390;
+                final weatherSummary = Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Now',
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 14,
+                        letterSpacing: 1.2,
                       ),
-                      const SizedBox(height: 8),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "$currentTemp°",
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 62,
-                              fontWeight: FontWeight.bold,
-                              height: 1,
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "$currentTemp°",
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 62,
+                            fontWeight: FontWeight.bold,
+                            height: 1,
+                          ),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 8, left: 4),
+                          child: Text(
+                            'C',
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 22,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
-                          const Padding(
-                            padding: EdgeInsets.only(top: 8, left: 4),
-                            child: Text(
-                              'C',
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 22,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        'Updated at ${_formatTime(updatedAt)}',
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 15,
                         ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      'Updated at ${_formatTime(updatedAt)}',
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 15,
                       ),
-                      const SizedBox(height: 18),
-                      const Text(
-                        'Cloudy skies with occasional rain',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
+                    ),
+                    const SizedBox(height: 18),
+                    const Text(
+                      'Cloudy skies with occasional rain',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
                       ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Container(
-                  width: 150,
-                  height: 150,
+                    ),
+                  ],
+                );
+                final windIndicator = Container(
+                  width: isCompact ? 128 : 150,
+                  height: isCompact ? 128 : 150,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(color: Colors.white30, width: 3),
@@ -173,8 +170,28 @@ class _CurrentWeatherState extends State<CurrentWeather> {
                       ],
                     ),
                   ),
-                ),
-              ],
+                );
+
+                if (isCompact) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      weatherSummary,
+                      const SizedBox(height: 18),
+                      Center(child: windIndicator),
+                    ],
+                  );
+                }
+
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(child: weatherSummary),
+                    const SizedBox(width: 12),
+                    windIndicator,
+                  ],
+                );
+              },
             ),
             const SizedBox(height: 22),
             Wrap(
