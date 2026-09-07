@@ -12,8 +12,8 @@ class CurrentWeather extends StatefulWidget {
 class _CurrentWeatherState extends State<CurrentWeather> {
   final WeatherService weatherService = WeatherService();
 
-WeatherData? weatherData; // 🟢 CHANGED
-DateTime? updatedAt;
+  WeatherData? weatherData; // 🟢 CHANGED
+  DateTime? updatedAt;
 
   @override
   void initState() {
@@ -89,69 +89,65 @@ DateTime? updatedAt;
         ),
         child: Column(
           children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Now',
-                        style: TextStyle(
-                          color: Colors.white70,
-                          fontSize: 14,
-                          letterSpacing: 1.2,
-                        ),
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final leftContent = Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Now',
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 14,
+                        letterSpacing: 1.2,
                       ),
-                      const SizedBox(height: 8),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "$currentTemp°",
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 62,
-                              fontWeight: FontWeight.bold,
-                              height: 1,
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "$currentTemp°",
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 62,
+                            fontWeight: FontWeight.bold,
+                            height: 1,
+                          ),
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 8, left: 4),
+                          child: Text(
+                            'C',
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 22,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
-                          const Padding(
-                            padding: EdgeInsets.only(top: 8, left: 4),
-                            child: Text(
-                              'C',
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 22,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Text(
-                        'Updated at ${_formatTime(updatedAt)}',
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 15,
                         ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      'Updated at ${_formatTime(updatedAt)}',
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 15,
                       ),
-                      const SizedBox(height: 18),
-                      const Text(
-                        'Cloudy skies with occasional rain',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
+                    ),
+                    const SizedBox(height: 18),
+                    const Text(
+                      'Cloudy skies with occasional rain',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
                       ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Container(
+                    ),
+                  ],
+                );
+                final windIndicator = Container(
                   width: 150,
                   height: 150,
                   decoration: BoxDecoration(
@@ -159,33 +155,52 @@ DateTime? updatedAt;
                     border: Border.all(color: Colors.white30, width: 3),
                     color: Colors.white.withOpacity(0.08),
                   ),
-                  child:  Center(
+                  child: Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.air_rounded,
                           color: Color(0xFFBCE7FF),
                           size: 34,
                         ),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         Text(
                           windSpeed,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        Text(
+                        const Text(
                           'km/h',
                           style: TextStyle(color: Colors.white70, fontSize: 14),
                         ),
                       ],
                     ),
                   ),
-                ),
-              ],
+                );
+                final isNarrow = constraints.maxWidth < 340;
+
+                return Flex(
+                  direction: isNarrow ? Axis.vertical : Axis.horizontal,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    isNarrow ? leftContent : Expanded(child: leftContent),
+                    SizedBox(
+                      width: isNarrow ? 0 : 12,
+                      height: isNarrow ? 16 : 0,
+                    ),
+                    isNarrow
+                        ? SizedBox(
+                            width: constraints.maxWidth,
+                            child: Center(child: windIndicator),
+                          )
+                        : windIndicator,
+                  ],
+                );
+              },
             ),
             const SizedBox(height: 22),
             Wrap(
